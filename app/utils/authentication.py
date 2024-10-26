@@ -1,3 +1,5 @@
+import re
+import string
 import base64
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
@@ -12,14 +14,16 @@ security = HTTPBasic()
 async def get_current_user(
     credentials: Annotated[HTTPBasicCredentials, Depends(security)]
 ):
-    user = await get_user_by_username(credentials.username)
-    if not user or not is_credentials(user, credentials.username, credentials.password):
+    user_in_system = await get_user_by_username(credentials.username)
+    if not user_in_system or not is_credentials(
+        user_in_system, credentials.username, credentials.password
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return user
+    return user_in_system
 
 
 async def get_current_active_user(
@@ -34,11 +38,11 @@ async def get_current_active_user(
 
 def is_credentials(user, username: str, password: str) -> bool:
     if user:
-        return user["hashed_credentials"] == create_bearer_token(username, password)
+        return user["hashed_credentials"] == create_basic_token(username, password)
     return False
 
 
-def create_bearer_token(username: str, password: str) -> str:
+def create_basic_token(username: str, password: str) -> str:
     message = f"{username}:{password}"
     message_bytes = message.encode("ascii")
 
@@ -46,3 +50,15 @@ def create_bearer_token(username: str, password: str) -> str:
     base64_message = base64_bytes.decode("ascii")
 
     return base64_message
+
+
+def check_password_strength(password: str) -> bool:
+    requirements = [
+        len(password) > 8,
+        re.search(r"[A-Z]", password),
+        re.search(r"[a-z]", password),
+        re.search(r"[0-9]", password),
+        re.search(f"[{re.escape(string.punctuation)}]", password),
+    ]
+
+    return all(requirements)

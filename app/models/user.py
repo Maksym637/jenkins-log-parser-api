@@ -1,8 +1,8 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 
 
 class UserCreate(BaseModel):
-    username: str = Field(..., unique=True)
+    username: str
     email: EmailStr
     password: str
     is_active: bool = True
