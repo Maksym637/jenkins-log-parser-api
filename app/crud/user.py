@@ -30,7 +30,7 @@ async def get_all_users() -> list[dict]:
     return users
 
 
-async def update_user(user_id: int, data: dict) -> bool:
+async def update_user_by_id(user_id: int, data: dict) -> bool:
     if not data:
         return False
 
@@ -46,7 +46,7 @@ async def update_user(user_id: int, data: dict) -> bool:
     return False
 
 
-async def delete_user(user_id: str) -> bool:
+async def delete_user_by_id(user_id: str) -> bool:
     user = await user_collection.find_one({"_id": ObjectId(user_id)})
     if user:
         await user_collection.delete_one({"_id": ObjectId(user_id)})

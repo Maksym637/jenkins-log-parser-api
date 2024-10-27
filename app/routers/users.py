@@ -7,8 +7,8 @@ from crud.user import (
     get_user_by_id,
     get_user_by_username,
     get_all_users,
-    update_user,
-    delete_user,
+    update_user_by_id,
+    delete_user_by_id,
 )
 from utils.authentication import (
     get_current_active_user,
@@ -51,7 +51,7 @@ async def create_user_router(user: UserCreate):
     return await create_user(user_data)
 
 
-@user_router.post("/login", tags=["auth"], description="Login to the system")
+@user_router.post("/login", tags=["auth"], description="Login user to the system")
 async def login_router(user: UserLogin):
     user_in_system = await get_user_by_username(user.username)
 
@@ -90,10 +90,12 @@ async def get_user_router(
     id: str, current_user: Annotated[UserResponse, Depends(get_current_active_user)]
 ):
     user_in_system = await get_user_by_id(id)
+
     if not user_in_system:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
+
     return user_in_system
 
 
@@ -110,13 +112,12 @@ async def get_users_router(
 
 
 @user_router.put(
-    "/user/{id}",
+    "/user/me",
     response_model=UserResponse,
     tags=["users"],
-    description="Update user by id",
+    description="Update current user (me)",
 )
 async def update_user_router(
-    id: str,
     user: UserCreate,
     current_user: Annotated[UserResponse, Depends(get_current_active_user)],
 ):
@@ -140,23 +141,18 @@ async def update_user_router(
     user_data = user.model_dump(exclude={"password"}, exclude_unset=True)
     user_data["hashed_credentials"] = create_basic_token(user.username, user.password)
 
-    if not await update_user(id, user_data):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+    await update_user_by_id(current_user["id"], user_data)
 
-    return await get_user_by_id(id)
+    return await get_user_by_id(current_user["id"])
 
 
-@user_router.delete("/user/{id}", tags=["users"], description="Delete user by id")
+@user_router.delete("/user/me", tags=["users"], description="Delete current user (me)")
 async def delete_user_router(
-    id: str, current_user: Annotated[UserResponse, Depends(get_current_active_user)]
+    current_user: Annotated[UserResponse, Depends(get_current_active_user)]
 ):
-    if not await delete_user(id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+    await delete_user_by_id(current_user["id"])
+
     return JSONResponse(
-        content={"message": f"The user with id '{id}' is deleted successfully"},
+        content={"message": "You are deleted successfully"},
         status_code=status.HTTP_200_OK,
     )
