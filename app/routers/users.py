@@ -51,7 +51,7 @@ async def create_user_router(user: UserCreate):
     return await create_user(user_data)
 
 
-@user_router.post("/login", tags=["auth"], description="Login user to the system")
+@user_router.post("/login", tags=["auth"], description="Log in user to the system")
 async def login_router(user: UserLogin):
     user_in_system = await get_user_by_username(user.username)
 

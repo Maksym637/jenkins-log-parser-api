@@ -1,10 +1,12 @@
 import re
 import requests
+from datetime import datetime
 from requests.exceptions import RequestException
 from bson import ObjectId
 from fastapi import HTTPException, status
-from dependencies import jenkins_log_collection
+from dependencies import jenkins_log_collection, jenkins_history_collection
 from models.jenkins_log import ParsedLogData, ChartLogData, JenkinsLogCreateComplete
+from models.jenkins_history import JenkinsHistoryCreateComplete
 from schemas.jenkins_log import get_jenkins_log_in_db
 from utils.constants import TestResult, RegexString
 from utils.timer import timeit
@@ -23,14 +25,22 @@ async def create_jenkins_log(user_id: str, jenkins_log_data: dict) -> dict:
     )
     jenkins_log_data_complete = jenkins_log_data_complete.model_dump()
 
-    # Create parsed Jenkins log file
+    # -> Insert parsed Jenkins log
     jenkins_log = await jenkins_log_collection.insert_one(jenkins_log_data_complete)
     created_jenkins_log = await jenkins_log_collection.find_one(
         {"_id": ObjectId(jenkins_log.inserted_id)}
     )
 
-    # Create corresponding Jenkins log history
-    # TODO
+    # -> Insert Jenkins log history
+    jenkins_history_data_complete = JenkinsHistoryCreateComplete(
+        time_executed=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        time_spent=round(time_spent, 2),
+        jenkins_log_id=str(jenkins_log.inserted_id),
+        user_id=user_id,
+    )
+    jenkins_history_data_complete = jenkins_history_data_complete.model_dump()
+
+    await jenkins_history_collection.insert_one(jenkins_history_data_complete)
 
     return get_jenkins_log_in_db(created_jenkins_log)
 
@@ -58,6 +68,9 @@ async def delete_jenkins_log_by_id(user_id: str, jenkins_log_id: str) -> bool:
     if jenkins_log:
         await jenkins_log_collection.delete_one(
             {"_id": ObjectId(jenkins_log_id), "user_id": user_id}
+        )
+        await jenkins_history_collection.delete_one(
+            {"jenkins_log_id": jenkins_log_id, "user_id": user_id}
         )
         return True
     return False
