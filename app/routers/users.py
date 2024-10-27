@@ -29,6 +29,7 @@ user_router = APIRouter()
 )
 async def create_user_router(user: UserCreate):
     user_in_system = await get_user_by_username(user.username)
+
     if user_in_system:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -119,11 +120,31 @@ async def update_user_router(
     user: UserCreate,
     current_user: Annotated[UserResponse, Depends(get_current_active_user)],
 ):
-    user_data = user.model_dump(exclude_unset=True)
+    user_in_system = await get_user_by_username(user.username)
+
+    if user_in_system and user_in_system != current_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The user with this username already exists in the system",
+        )
+
+    if not check_password_strength(user.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Password must be at least 8 characters long, include one uppercase, "
+                "lowercase letter, one digit and one special character"
+            ),
+        )
+
+    user_data = user.model_dump(exclude={"password"}, exclude_unset=True)
+    user_data["hashed_credentials"] = create_basic_token(user.username, user.password)
+
     if not await update_user(id, user_data):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
+
     return await get_user_by_id(id)
 
 
