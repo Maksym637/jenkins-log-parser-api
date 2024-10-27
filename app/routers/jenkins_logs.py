@@ -16,9 +16,9 @@ jenkins_log_router = APIRouter()
 
 
 @jenkins_log_router.post(
-    "/jenkins-log",
+    "/jenkins-logs/me",
     response_model=JenkinsLogResponse,
-    tags=["jenkins-log"],
+    tags=["jenkins-logs"],
     description="Create new parsed Jenkins log",
 )
 async def create_jenkins_log_router(
@@ -31,9 +31,9 @@ async def create_jenkins_log_router(
 
 
 @jenkins_log_router.get(
-    "/jenkins-log/{id}",
+    "/jenkins-logs/me/{id}",
     response_model=JenkinsLogResponse,
-    tags=["jenkins-log"],
+    tags=["jenkins-logs"],
     description="Get parsed Jenkins log by id",
 )
 async def get_jenkins_log_router(
@@ -50,9 +50,9 @@ async def get_jenkins_log_router(
 
 
 @jenkins_log_router.get(
-    "/jenkins-log",
+    "/jenkins-logs/me",
     response_model=list[JenkinsLogResponse],
-    tags=["jenkins-log"],
+    tags=["jenkins-logs"],
     description="Get all parsed Jenkins logs",
 )
 async def get_jenkins_logs_router(
@@ -62,8 +62,8 @@ async def get_jenkins_logs_router(
 
 
 @jenkins_log_router.delete(
-    "/jenkins-log/{id}",
-    tags=["jenkins-log"],
+    "/jenkins-logs/me/{id}",
+    tags=["jenkins-logs"],
     description="Delete parsed Jenkins log by id",
 )
 async def delete_jenkins_log_router(

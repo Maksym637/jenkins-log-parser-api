@@ -22,7 +22,7 @@ user_router = APIRouter()
 
 
 @user_router.post(
-    "/user",
+    "/users",
     response_model=UserResponse,
     tags=["users"],
     description="Register user in the system",
@@ -81,7 +81,7 @@ async def logout_router(
 
 
 @user_router.get(
-    "/user/{id}",
+    "/users/{id}",
     response_model=UserResponse,
     tags=["users"],
     description="Get user by id",
@@ -100,7 +100,7 @@ async def get_user_router(
 
 
 @user_router.get(
-    "/user",
+    "/users",
     response_model=list[UserResponse],
     tags=["users"],
     description="Get all users",
@@ -112,7 +112,7 @@ async def get_users_router(
 
 
 @user_router.put(
-    "/user/me",
+    "/users/me",
     response_model=UserResponse,
     tags=["users"],
     description="Update current user (me)",
@@ -146,7 +146,7 @@ async def update_user_router(
     return await get_user_by_id(current_user["id"])
 
 
-@user_router.delete("/user/me", tags=["users"], description="Delete current user (me)")
+@user_router.delete("/users/me", tags=["users"], description="Delete current user (me)")
 async def delete_user_router(
     current_user: Annotated[UserResponse, Depends(get_current_active_user)]
 ):

@@ -1,10 +1,12 @@
+import os
+from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 from utils.constants import Dependencies as DP
 
 
-MONGO_DETAILS = "mongodb://localhost:27017"
-client = AsyncIOMotorClient(MONGO_DETAILS)
+load_dotenv()
 
+client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
 database = client.get_database(DP.DB_NAME)
 
 user_collection = database.get_collection(DP.USER_COLLECTION)
