@@ -1,15 +1,15 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
-from models.user import UserResponse
-from models.jenkins_log import JenkinsLogCreate, JenkinsLogResponse
-from crud.jenkins_log import (
+from app.models.user import UserResponse
+from app.models.jenkins_log import JenkinsLogCreate, JenkinsLogResponse
+from app.crud.jenkins_log import (
     create_jenkins_log,
     get_jenkins_log_by_id,
     get_all_jenkins_logs,
     delete_jenkins_log_by_id,
 )
-from utils.authentication import get_current_active_user
+from app.utils.authentication import get_current_active_user
 
 
 jenkins_log_router = APIRouter()

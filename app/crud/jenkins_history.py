@@ -1,6 +1,6 @@
 from bson import ObjectId
-from dependencies import jenkins_history_collection
-from schemas.jenkins_history import get_jenkins_history_in_db
+from app.dependencies import jenkins_history_collection
+from app.schemas.jenkins_history import get_jenkins_history_in_db
 
 
 async def get_jenkins_history_by_id(user_id: str, jenkins_history_id: str) -> dict:

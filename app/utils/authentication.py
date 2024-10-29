@@ -4,8 +4,8 @@ import base64
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from models.user import UserResponse
-from crud.user import get_user_by_username
+from app.models.user import UserResponse
+from app.crud.user import get_user_by_username
 
 
 security = HTTPBasic()

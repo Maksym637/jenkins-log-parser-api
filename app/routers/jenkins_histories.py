@@ -1,14 +1,14 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
-from models.user import UserResponse
-from models.jenkins_history import JenkinsHistoryResponse
-from crud.jenkins_history import (
+from app.models.user import UserResponse
+from app.models.jenkins_history import JenkinsHistoryResponse
+from app.crud.jenkins_history import (
     get_jenkins_history_by_id,
     get_all_jenkins_histories,
     delete_jenkins_history_by_id,
 )
-from utils.authentication import get_current_active_user
+from app.utils.authentication import get_current_active_user
 
 
 jenkins_history_router = APIRouter()

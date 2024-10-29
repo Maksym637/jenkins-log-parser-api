@@ -2,12 +2,32 @@
 - - -
 Prepared by __Maksym Oliinyk__
 - - -
-### Execute application
-- 1 command inside `/app`:
+### Description
+...
+- - -
+### Technologies
+. . .
+- - -
+### Project structure
+. . .
+- - -
+### Project execution
+1. Install app
+2. Launch app
 ```bash
-uvicorn main:app
+uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
-- 2 command:
+3. Launch tests
 ```bash
-python app/main.py
+pytest tests
 ```
+4. See tests coverage
+withou threshold
+```bash
+pytest --cov=app
+```
+with threshold
+```bash
+pytest --cov=app --cov-fail-under=90
+```
+- - -

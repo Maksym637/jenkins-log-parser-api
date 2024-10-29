@@ -1,8 +1,8 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
-from models.user import UserLogin, UserCreate, UserResponse
-from crud.user import (
+from app.models.user import UserLogin, UserCreate, UserResponse
+from app.crud.user import (
     create_user,
     get_user_by_id,
     get_user_by_username,
@@ -10,7 +10,7 @@ from crud.user import (
     update_user_by_id,
     delete_user_by_id,
 )
-from utils.authentication import (
+from app.utils.authentication import (
     get_current_active_user,
     is_credentials,
     create_basic_token,

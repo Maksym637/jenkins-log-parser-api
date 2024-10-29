@@ -4,12 +4,12 @@ from datetime import datetime
 from requests.exceptions import RequestException
 from bson import ObjectId
 from fastapi import HTTPException, status
-from dependencies import jenkins_log_collection, jenkins_history_collection
-from models.jenkins_log import ParsedLogData, ChartLogData, JenkinsLogCreateComplete
-from models.jenkins_history import JenkinsHistoryCreateComplete
-from schemas.jenkins_log import get_jenkins_log_in_db
-from utils.constants import TestResult, RegexString
-from utils.timer import timeit
+from app.dependencies import jenkins_log_collection, jenkins_history_collection
+from app.models.jenkins_log import ParsedLogData, ChartLogData, JenkinsLogCreateComplete
+from app.models.jenkins_history import JenkinsHistoryCreateComplete
+from app.schemas.jenkins_log import get_jenkins_log_in_db
+from app.utils.constants import TestResult, RegexString
+from app.utils.timer import timeit
 
 
 async def create_jenkins_log(user_id: str, jenkins_log_data: dict) -> dict:

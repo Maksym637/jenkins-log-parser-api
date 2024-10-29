@@ -1,6 +1,6 @@
 from bson import ObjectId
-from dependencies import user_collection
-from schemas.user import get_user_in_db
+from app.dependencies import user_collection
+from app.schemas.user import get_user_in_db
 
 
 async def create_user(user_data: dict) -> dict:

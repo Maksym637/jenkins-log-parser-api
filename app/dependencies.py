@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
-from utils.constants import Dependencies as DP
+from app.utils.constants import Dependencies as DP
 
 
 load_dotenv()
