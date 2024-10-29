@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from fastapi import status
+from tests.ancillary import get_headers, swapped_in_half
 
 
 test_user_data = {
@@ -8,10 +9,6 @@ test_user_data = {
     "email": "tuser@gmail.com",
     "password": "Tuser123_",
     "is_active": True,
-}
-
-get_headers = lambda hashed_credentials: {
-    "Authorization": f"Basic {hashed_credentials}"
 }
 
 
@@ -146,11 +143,8 @@ async def test_get_user_negative(async_client: AsyncClient):
     user_id = response_create.json()["id"]
     hashed_credentials = response_create.json()["hashed_credentials"]
 
-    user_id_first = user_id[0 : len(user_id) // 2]
-    user_id_second = user_id[len(user_id) // 2 : len(user_id)]
-
     response_get = await async_client.get(
-        f"/users/{user_id_second}{user_id_first}",
+        f"/users/{swapped_in_half(user_id)}",
         headers=get_headers(hashed_credentials),
     )
 
