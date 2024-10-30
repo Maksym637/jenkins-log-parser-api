@@ -112,9 +112,43 @@ async def test_get_jenkins_log_negative(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_delete_jenkins_log_positive(async_client: AsyncClient):
-    pass
+    response_user = await async_client.post("/users", json=test_user_data)
+    hashed_credentials = response_user.json()["hashed_credentials"]
+
+    response_create = await async_client.post(
+        "/jenkins-logs/me",
+        json={"external_url": "http://192.168.0.112:8000/jenkins/105/log-file-txt"},
+        headers=get_headers(hashed_credentials),
+    )
+    jenkins_log_id = response_create.json()["id"]
+
+    response_delete = await async_client.delete(
+        f"/jenkins-logs/me/{jenkins_log_id}", headers=get_headers(hashed_credentials)
+    )
+    actual_response_msg = response_delete.json()["message"]
+
+    assert response_delete.status_code == status.HTTP_200_OK
+    assert (
+        actual_response_msg
+        == f"The Jenkins log with id '{jenkins_log_id}' is deleted successfully"
+    )
 
 
 @pytest.mark.asyncio
 async def test_delete_jenkins_log_negative(async_client: AsyncClient):
-    pass
+    response_user = await async_client.post("/users", json=test_user_data)
+    hashed_credentials = response_user.json()["hashed_credentials"]
+
+    response_create = await async_client.post(
+        "/jenkins-logs/me",
+        json={"external_url": "http://192.168.0.112:8000/jenkins/105/log-file-txt"},
+        headers=get_headers(hashed_credentials),
+    )
+    jenkins_log_id = response_create.json()["id"]
+
+    response_delete = await async_client.delete(
+        f"/jenkins-logs/me/{swapped_in_half(jenkins_log_id)}",
+        headers=get_headers(hashed_credentials),
+    )
+
+    assert response_delete.status_code == status.HTTP_404_NOT_FOUND
