@@ -81,6 +81,18 @@ async def logout_router(
 
 
 @user_router.get(
+    "/users/me",
+    response_model=UserResponse,
+    tags=["users"],
+    description="Get current user (me)",
+)
+async def get_current_user_router(
+    current_user: Annotated[UserResponse, Depends(get_current_active_user)]
+):
+    return await get_user_by_id(current_user["id"])
+
+
+@user_router.get(
     "/users/{id}",
     response_model=UserResponse,
     tags=["users"],
